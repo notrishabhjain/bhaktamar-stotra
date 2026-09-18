@@ -47,7 +47,7 @@ const verseLines = (text) =>
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
-    .map((line) => `<span class="verse__line">${esc(line)}</span>`)
+    .map((line) => `<p>${esc(line)}</p>`)
     .join('\n          ');
 
 const metaDescription = (shloka) => {
@@ -75,7 +75,7 @@ function layout({ title, description, bodyClass, prefix, main, canonicalPath }) 
 <link rel="preload" as="font" type="font/woff2" href="${prefix}assets/fonts/noto-serif-devanagari-400.woff2" crossorigin>
 <link rel="stylesheet" href="${prefix}assets/css/site.css">
 </head>
-<body class="${bodyClass}">
+<body class="${bodyClass} marble-surface">
 ${main}
 <script src="${prefix}assets/js/site.js" defer></script>
 </body>
@@ -90,16 +90,16 @@ function landingPage(data) {
     .map((s, i) => {
       const num = toDevanagari(s.id);
       return `      <li class="grid__item" style="--i:${i}">
-        <a class="card" href="${s.slug}/" data-card aria-label="श्लोक ${num} — ${esc(s.title)}">
-          <span class="card__inner">
-            <span class="card__face card__face--front">
-              <span class="card__number">${num}</span>
-              <span class="card__title">${esc(s.title)}</span>
+        <a class="shloka-card" href="${s.slug}/" data-card aria-label="श्लोक ${num} — ${esc(s.title)}">
+          <span class="shloka-card-flip-inner">
+            <span class="shloka-card-face shloka-card-face--front">
+              <span class="shloka-card__number">${num}</span>
+              <span class="shloka-card__title">${esc(s.title)}</span>
             </span>
-            <span class="card__face card__face--back">
-              <img class="card__yantra" src="assets/images/thumb/s${String(s.id).padStart(2, '0')}_yantra.webp"
+            <span class="shloka-card-face shloka-card-face--back">
+              <img class="shloka-card__yantra" src="assets/images/thumb/s${String(s.id).padStart(2, '0')}_yantra.webp"
                    alt="" width="300" height="250" loading="lazy" decoding="async">
-              <span class="card__title card__title--back">${esc(s.title)}</span>
+              <span class="shloka-card__title shloka-card__title--back">${esc(s.title)}</span>
             </span>
           </span>
         </a>
@@ -114,7 +114,7 @@ function landingPage(data) {
 </header>
 <main class="page page--landing">
   <nav aria-label="सभी श्लोक">
-    <ul class="grid">
+    <ul class="shloka-grid">
 ${cards}
     </ul>
   </nav>
@@ -140,18 +140,18 @@ function detailPage(shloka, prev, next) {
   const nn = String(shloka.id).padStart(2, '0');
   const num = toDevanagari(shloka.id);
 
-  const picture = (base, alt, w, h, cls) => `<picture>
-              <source srcset="../assets/images/full/${base}.webp" type="image/webp">
-              <img class="${cls}" src="../assets/images/full/${base}.png" alt="${esc(alt)}"
-                   width="${w}" height="${h}" loading="lazy" decoding="async">
-            </picture>`;
+  const picture = (base, alt, w, h) => `<picture>
+            <source srcset="../assets/images/full/${base}.webp" type="image/webp">
+            <img src="../assets/images/full/${base}.png" alt="${esc(alt)}"
+                 width="${w}" height="${h}" loading="lazy" decoding="async">
+          </picture>`;
 
   const prevLink = prev
-    ? `<a class="pager__link pager__link--prev" href="../${prev.slug}/" rel="prev">← पिछला श्लोक</a>`
-    : `<span class="pager__link pager__link--prev is-disabled" aria-disabled="true">← पिछला श्लोक</span>`;
+    ? `<a class="footer-nav__link" href="../${prev.slug}/" rel="prev">← पिछला श्लोक</a>`
+    : `<span class="footer-nav__link is-disabled" aria-disabled="true">← पिछला श्लोक</span>`;
   const nextLink = next
-    ? `<a class="pager__link pager__link--next" href="../${next.slug}/" rel="next">अगला श्लोक →</a>`
-    : `<span class="pager__link pager__link--next is-disabled" aria-disabled="true">अगला श्लोक →</span>`;
+    ? `<a class="footer-nav__link" href="../${next.slug}/" rel="next">अगला श्लोक →</a>`
+    : `<span class="footer-nav__link is-disabled" aria-disabled="true">अगला श्लोक →</span>`;
 
   const main = `<main class="page page--detail">
   <nav class="breadcrumb" aria-label="वापस">
@@ -166,56 +166,52 @@ function detailPage(shloka, prev, next) {
     </header>
 
     <section class="block block--verse" aria-labelledby="label-sanskrit">
-      <h2 class="label" id="label-sanskrit">संस्कृत मूल</h2>
-      <p class="verse verse--sanskrit">
+      <h2 class="section-label section-label--deva" id="label-sanskrit">संस्कृत मूल</h2>
+      <div class="verse-sanskrit">
           ${verseLines(shloka.sanskrit)}
-      </p>
+      </div>
     </section>
 
     <section class="block block--verse" aria-labelledby="label-doha">
-      <h2 class="label" id="label-doha">हिंदी दोहा</h2>
-      <p class="verse verse--doha">
+      <h2 class="section-label section-label--deva" id="label-doha">हिंदी दोहा</h2>
+      <div class="verse-doha">
           ${verseLines(shloka.hindiDoha)}
-      </p>
+      </div>
     </section>
 
     <section class="block" aria-labelledby="label-hindi-meaning">
-      <h2 class="label" id="label-hindi-meaning">हिंदी अर्थ</h2>
+      <h2 class="section-label section-label--deva" id="label-hindi-meaning">हिंदी अर्थ</h2>
       <p class="prose">${esc(shloka.hindiMeaning)}</p>
     </section>
 
     <section class="block" aria-labelledby="label-english-meaning">
-      <h2 class="label" id="label-english-meaning">Simple English Meaning</h2>
+      <h2 class="section-label" id="label-english-meaning">Simple English Meaning</h2>
       <p class="prose prose--translation">${esc(shloka.englishMeaning)}</p>
     </section>
 
     <section class="block block--images" aria-labelledby="label-images">
-      <h2 class="label" id="label-images">यंत्र एवं भाव-चित्र</h2>
+      <h2 class="section-label section-label--deva" id="label-images">यंत्र एवं भाव-चित्र</h2>
       <div class="plates">
-        <figure class="plate">
-          <div class="plate__frame">
-            ${picture(`s${nn}_yantra`, `Yantra for Shloka ${shloka.id}`, 300, 250, 'plate__img')}
-          </div>
-          <figcaption class="plate__caption">यंत्र</figcaption>
+        <figure class="devotional-image-frame">
+          ${picture(`s${nn}_yantra`, `Yantra for Shloka ${shloka.id}`, 300, 250)}
+          <figcaption>यंत्र</figcaption>
         </figure>
-        <figure class="plate">
-          <div class="plate__frame">
-            ${picture(`s${nn}_murti`, `Bhav-chitra depiction for Shloka ${shloka.id}`, 340, 470, 'plate__img')}
-          </div>
-          <figcaption class="plate__caption">भाव-चित्र</figcaption>
+        <figure class="devotional-image-frame">
+          ${picture(`s${nn}_murti`, `Bhav-chitra depiction for Shloka ${shloka.id}`, 340, 470)}
+          <figcaption>भाव-चित्र</figcaption>
         </figure>
       </div>
     </section>
 
-    <section class="reflection" aria-labelledby="label-reflection">
-      <h2 class="label label--reflection" id="label-reflection">जीवन से जुड़ाव</h2>
-      <p class="reflection__text">${esc(shloka.reflectionHindi)}</p>
+    <section class="reflection-panel" aria-labelledby="label-reflection">
+      <h2 class="section-label section-label--deva" id="label-reflection">जीवन से जुड़ाव</h2>
+      <p>${esc(shloka.reflectionHindi)}</p>
     </section>
   </article>
 
-  <nav class="pager" aria-label="श्लोक नेविगेशन">
+  <nav class="footer-nav" aria-label="श्लोक नेविगेशन">
     ${prevLink}
-    <a class="pager__link pager__link--all" href="../">सभी श्लोक</a>
+    <a class="footer-nav__link" href="../">सभी श्लोक</a>
     ${nextLink}
   </nav>
 </main>

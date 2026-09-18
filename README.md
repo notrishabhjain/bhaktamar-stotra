@@ -82,11 +82,33 @@ origin, resolved in this order:
 3. Neither set (a plain local build) — canonical tags and the sitemap are
    skipped rather than pointing at a guessed domain.
 
+## Design system
+
+`DESIGN-TOKENS.md` is the source of truth for visual styling — the
+"Śveta Śilā" (White Stone) token set. Every token in it is declared as a CSS
+custom property on `:root` in `src/styles.css`, and nothing outside that block
+hardcodes a value that has a token. To restyle the site, change the token, not
+the component.
+
+Two documented deviations, both for WCAG AA:
+
+- The card numeral uses `--color-gold-700` rather than `--color-gold-500`.
+  Gold 500 measures 3.06:1 on the card surface, short of the 4.5:1 that text at
+  `--text-lg` needs; gold 700 is the same hue family at 5.94:1. Gold 500 is
+  still used for hairlines, rules and the focus ring, where contrast minimums
+  don't apply.
+- Below the tablet breakpoint the Sanskrit and doha blocks step down one size
+  token (`--text-lg` / `--text-base`). At 375px the longest Sanskrit line
+  renders 370px wide at `--text-2xl` against 327px of available width, which
+  wrapped every line and broke the verse structure. Desktop sizes are
+  unchanged.
+
 ## Accessibility notes
 
 Cards are real links, focusable and openable with Enter, with a soft gold focus
-ring. Body text uses the warm charcoal tone (13.6:1 on the page background).
-The gold accent is reserved for large or decorative type, where it meets WCAG
-AA for large text; small text that needs the accent uses the darker
-`--gold-deep` (5.8:1). The 3D card flip is replaced by a plain cross-fade when
-`prefers-reduced-motion` is set.
+ring (`--color-focus-ring`, never the browser-default blue). Body text uses the
+warm charcoal tone at 13.6:1 on the page background; secondary text is 5.5:1
+and the reflection panel's sage label is 4.9:1 on its tint. The gold accent is
+reserved for hairlines and decoration, with `--color-gold-700` (5.9:1) wherever
+gold carries text. The 3D card flip is replaced by an opacity cross-fade when
+`prefers-reduced-motion` is set, and tap-to-flip replaces hover on touch.
