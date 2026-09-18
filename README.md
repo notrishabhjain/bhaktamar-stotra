@@ -68,8 +68,19 @@ push to the repository default branch. Enable it once under *Settings → Pages 
 → Source: GitHub Actions*. Works at both `user.github.io` and
 `user.github.io/repo/` without configuration.
 
-**Vercel** — `vercel.json` sets the build command and output directory. Import
-the repository and deploy; no environment variables are needed.
+**Vercel** (the configured target) — `vercel.json` sets the build command,
+output directory and long-lived cache headers for fonts and images. Import the
+repository and deploy; no environment variables are required.
+
+Canonical tags and `sitemap.xml`/`robots.txt` are generated from the site
+origin, resolved in this order:
+
+1. `SITE_URL` — set this once a custom domain is attached, e.g.
+   `SITE_URL=https://bhaktamar.example`.
+2. `VERCEL_PROJECT_PRODUCTION_URL` — injected automatically by Vercel, so the
+   default `*.vercel.app` domain works with no configuration.
+3. Neither set (a plain local build) — canonical tags and the sitemap are
+   skipped rather than pointing at a guessed domain.
 
 ## Accessibility notes
 

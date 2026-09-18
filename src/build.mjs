@@ -15,6 +15,19 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
 const contentDir = path.join(root, 'content');
 
+/**
+ * Canonical origin. Set SITE_URL for a custom domain; otherwise Vercel's
+ * own production domain is used when building there. When neither is
+ * present (a plain local build) canonical tags and the sitemap are skipped
+ * rather than guessed.
+ */
+const SITE_URL = (() => {
+  const raw = process.env.SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : '');
+  return raw ? raw.replace(/\/+$/, '') : '';
+})();
+
 const SITE_TITLE = 'श्री भक्तामर स्तोत्र';
 const SITE_SUBTITLE = 'Bhaktamar Stotra — 48 Verses for Reflection';
 
@@ -45,14 +58,15 @@ const metaDescription = (shloka) => {
 
 /* ---------------------------------------------------------------- layout */
 
-function layout({ title, description, bodyClass, prefix, main }) {
+function layout({ title, description, bodyClass, prefix, main, canonicalPath }) {
+  const canonical = SITE_URL ? `\n<link rel="canonical" href="${SITE_URL}${canonicalPath}">` : '';
   return `<!doctype html>
 <html lang="hi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
-<meta name="description" content="${esc(description)}">
+<meta name="description" content="${esc(description)}">${canonical}
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="website">
@@ -115,6 +129,7 @@ ${cards}
       'All 48 shlokas of the Shri Bhaktamar Stotra — Sanskrit verse, Hindi doha, meanings in Hindi and English, yantra and bhav-chitra, and a reflection for everyday life.',
     bodyClass: 'body--landing',
     prefix: '',
+    canonicalPath: '/',
     main,
   });
 }
@@ -213,6 +228,7 @@ function detailPage(shloka, prev, next) {
     description: metaDescription(shloka),
     bodyClass: 'body--detail',
     prefix: '../',
+    canonicalPath: `/${shloka.slug}/`,
     main,
   });
 }
@@ -269,6 +285,26 @@ async function buildFonts() {
   }
 }
 
+/* ------------------------------------------------------------------ seo */
+
+async function buildSeoFiles(data) {
+  if (!SITE_URL) {
+    console.log('SITE_URL not set — skipping sitemap.xml and robots.txt');
+    return;
+  }
+  const urls = ['/', ...data.map((s) => `/${s.slug}/`)]
+    .map((u) => `  <url><loc>${SITE_URL}${u}</loc></url>`)
+    .join('\n');
+  await writeFile(
+    path.join(dist, 'sitemap.xml'),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`
+  );
+  await writeFile(
+    path.join(dist, 'robots.txt'),
+    `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
+  );
+}
+
 /* ----------------------------------------------------------------- main */
 
 const dirSize = async (dir) => {
@@ -304,6 +340,7 @@ async function build() {
 
   await buildFonts();
   await buildImages(data);
+  await buildSeoFiles(data);
 
   const mb = (n) => `${(n / 1024 / 1024).toFixed(2)} MB`;
   console.log(`Built 1 landing page + ${data.length} detail pages`);
