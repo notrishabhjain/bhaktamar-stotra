@@ -64,7 +64,7 @@ thumbnails), each detail page ≈ 60 KB.
 The build output is a plain static folder — any static host will serve it.
 
 **GitHub Pages** — `.github/workflows/deploy.yml` builds and deploys on every
-push to `main`. Enable it once under *Settings → Pages → Build and deployment
+push to the repository default branch. Enable it once under *Settings → Pages → Build and deployment
 → Source: GitHub Actions*. Works at both `user.github.io` and
 `user.github.io/repo/` without configuration.
 
