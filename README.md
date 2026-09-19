@@ -18,21 +18,65 @@ npm run serve     # preview dist/ at http://localhost:4173
 npm run dev       # build, then serve
 ```
 
+## Pages
+
+| Route | What it is |
+|---|---|
+| `/` | the 48-card grid, today's verse, and three doors into the text |
+| `/shloka-NN/` | one verse in full — Sanskrit, doha, meanings, images, reflection |
+| `/paath/` | all 48 Sanskrit verses in sequence, for continuous recitation |
+| `/rachna/` | the poem's architecture, including the eight great fears |
+| `/abhi/` | entry by inner state rather than by verse number |
+
 ## Project layout
 
 ```
 content/
   data.json             canonical content — 48 shlokas, in reading order
+  reflection-index.json derived — each reflection's inner state + group
+  structure.json        derived — the poem's sections and the eight fears
   images/               96 source PNGs (yantra + bhav-chitra per shloka)
+  fonts/                TTFs used to render share cards at build time
 src/
   build.mjs             the static site generator
   styles.css            all styling
-  site.js               tap-to-flip behaviour for touch devices
+  site.js               flip, keyboard nav, text size, today's verse, SW
+  sw.js                 service worker (offline support)
   serve.mjs             local preview server
   favicon.svg
 dist/                   build output (git-ignored)
 SPEC.md                 the original build specification
+DESIGN-TOKENS.md        the visual token system
 ```
+
+## Derived content
+
+Two files hold content *derived* from the reflections rather than authored
+alongside them, and both are meant to be reviewed and edited by hand:
+
+- `reflection-index.json` gives every shloka a one-line **inner state** (the
+  situation its reflection actually describes) and sorts the 48 into eight
+  groups. This is what `/abhi/` is built from. The verses, meanings and
+  reflections themselves are never touched.
+- `structure.json` describes the poem's sections. The eight-fears sequence
+  (verses 38–46) is evident in the source data itself — the titles name the
+  elephant, lion, fire, snake, war, water, disease and chains in order. The
+  other section boundaries follow conventional readings and are marked as a
+  reading aid on the page, not asserted as scholarship. **Verify them against
+  a source you trust before treating them as authoritative.**
+
+## Share cards
+
+Every page carries an `og:image` generated at build time into
+`dist/assets/share/` — the verse's yantra, its number, its theme and its inner
+state on the marble background, so a link shared to WhatsApp arrives as a card
+instead of a bare grey rectangle.
+
+Devanagari is rendered from the TTFs in `content/fonts/`, wired up through a
+fontconfig file that lists *only* that directory. A missing system font
+therefore cannot silently substitute tofu boxes — the build either renders the
+right glyphs or fails loudly. Cards are JPEG, averaging 48 KB, to stay inside
+WhatsApp's preview budget.
 
 ### Editing content
 
@@ -51,13 +95,15 @@ is rendered on its own line.
   Images are never cropped, filtered or distorted — only re-encoded.
 - Self-hosts the webfonts (Noto Serif Devanagari, Lora, Inter) from
   `@fontsource` packages, so there is no runtime Google Fonts request.
+- Generates 51 share cards, PWA icons and `manifest.webmanifest`.
 - Writes `.nojekyll` so GitHub Pages serves the output as-is.
 
 Every URL in the output is **relative**, so the same `dist/` works served from
 a domain root or from a repository sub-path.
 
 Rough transfer budget: landing page ≈ 0.95 MB (HTML + CSS + fonts + 48 lazy
-thumbnails), each detail page ≈ 60 KB.
+thumbnails), each detail page ≈ 60 KB. Share cards are only ever fetched by
+link-preview crawlers, never by readers.
 
 ## Deployment
 
@@ -102,6 +148,24 @@ Two documented deviations, both for WCAG AA:
   renders 370px wide at `--text-2xl` against 327px of available width, which
   wrapped every line and broke the verse structure. Desktop sizes are
   unchanged.
+
+## Behaviour
+
+All of it is progressive — with JavaScript off, every page still reads and
+every link still works.
+
+- **Arrow keys** move between verses on a shloka page.
+- **Reading size** has three steps, stored in `localStorage` and applied
+  before first paint so a saved size never flashes. Only the reading tokens
+  change; UI chrome keeps its size.
+- **Today's verse** is derived from the calendar day, so everyone sees the
+  same verse on the same day. No storage, no backend, no tracking.
+- **Offline**: a service worker precaches the shell and caches pages as they
+  are read, so a verse you have opened stays readable with no connection.
+  Pages are network-first, so a rebuild is picked up as soon as you are back
+  online.
+- **Print**: `@media print` drops navigation and decoration, forces white,
+  and keeps verses, panels and plates from splitting across pages.
 
 ## Accessibility notes
 

@@ -730,3 +730,523 @@ a {
     transform: none;
   }
 }
+
+/* =====================================================================
+   Reading size — the three steps offered by the text-size control.
+   Only the reading tokens change; UI chrome keeps its size.
+   ===================================================================== */
+
+:root[data-textsize='sm'] {
+  --text-base: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-2xl: clamp(1.75rem, 1.4rem + 1.6vw, 2.6rem);
+}
+
+:root[data-textsize='lg'] {
+  --text-base: 1.125rem;
+  --text-md: 1.3125rem;
+  --text-lg: 1.5rem;
+  --text-2xl: clamp(2.25rem, 1.8rem + 2vw, 3.4rem);
+}
+
+.textsize {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  float: right;
+}
+
+.textsize__label {
+  font-family: var(--font-devanagari);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-right: var(--space-1);
+}
+
+.textsize__btn {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 var(--space-1);
+  font-family: var(--font-devanagari);
+  color: var(--color-text-secondary);
+  line-height: 1;
+  transition: color var(--duration-fast) var(--ease-calm);
+}
+
+.textsize__btn:nth-child(2) { font-size: var(--text-xs); }
+.textsize__btn:nth-child(3) { font-size: var(--text-sm); }
+.textsize__btn:nth-child(4) { font-size: var(--text-md); }
+
+.textsize__btn:hover,
+.textsize__btn[aria-pressed='true'] {
+  color: var(--color-gold-700);
+}
+
+/* ---------------------------------------------------- verse for today  */
+
+.today {
+  max-width: var(--content-max-width);
+  margin: 0 auto var(--gap-section);
+  text-align: center;
+}
+
+.today__link {
+  display: block;
+  padding: var(--space-8) var(--space-6);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  text-decoration: none;
+  transition: box-shadow var(--duration-fast) var(--ease-calm),
+    transform var(--duration-fast) var(--ease-calm);
+}
+
+.today__link:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.today__number {
+  display: block;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-lg);
+  color: var(--color-gold-700);
+}
+
+.today__title {
+  display: block;
+  margin-top: var(--space-2);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-md);
+  color: var(--color-text-primary);
+}
+
+.today__state {
+  display: block;
+  margin-top: var(--space-3);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ------------------------------------------------------------- doors  */
+
+.doors {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  max-width: var(--content-max-width);
+  margin: 0 auto var(--gap-section);
+}
+
+@media (min-width: 768px) {
+  .doors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.door {
+  display: block;
+  padding: var(--space-6);
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: transform var(--duration-fast) var(--ease-calm),
+    box-shadow var(--duration-fast) var(--ease-calm);
+}
+
+.door:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.door__title {
+  display: block;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-md);
+  color: var(--color-text-primary);
+}
+
+.door__blurb {
+  display: block;
+  margin-top: var(--space-2);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+/* ------------------------------------------------- state line on detail */
+
+.shloka__state {
+  margin: var(--space-3) 0 0;
+}
+
+.shloka__state a {
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-bottom: var(--border-hairline);
+  padding-bottom: 2px;
+  transition: color var(--duration-fast) var(--ease-calm);
+}
+
+.shloka__state a:hover {
+  color: var(--color-gold-700);
+}
+
+/* -------------------------------------------------------- paath page  */
+
+.page--paath {
+  max-width: var(--content-max-width);
+}
+
+.paath__verse {
+  display: grid;
+  grid-template-columns: var(--space-8) 1fr;
+  gap: var(--space-4);
+  align-items: baseline;
+  margin-bottom: var(--gap-section);
+}
+
+.paath__number {
+  margin: 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+  text-align: right;
+  color: var(--color-gold-700);
+}
+
+.paath__number a {
+  text-decoration: none;
+}
+
+.paath .verse-sanskrit {
+  text-align: left;
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .paath__verse {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  .paath__number {
+    text-align: left;
+  }
+}
+
+/* ------------------------------------------------------- rachna page  */
+
+.page--rachna {
+  max-width: 900px;
+}
+
+.arc__section {
+  margin-bottom: var(--gap-section);
+  padding-bottom: var(--space-8);
+  border-bottom: var(--border-hairline);
+}
+
+.arc__section:last-child {
+  border-bottom: none;
+}
+
+.arc__title {
+  margin: var(--space-2) 0 var(--space-3);
+  font-family: var(--font-devanagari);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
+}
+
+.arc__blurb {
+  margin: 0 0 var(--space-6);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+  max-width: var(--content-max-width);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  display: inline-block;
+  min-width: 2.25rem;
+  padding: var(--space-1) var(--space-2);
+  text-align: center;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-calm),
+    transform var(--duration-fast) var(--ease-calm);
+}
+
+.chip:hover {
+  color: var(--color-gold-700);
+  transform: translateY(-2px);
+}
+
+.arc__section--fears {
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  border-bottom: none;
+}
+
+.fears {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .fears {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8);
+  }
+}
+
+.fear {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.fear__plate {
+  margin: 0;
+  border: var(--border-hairline);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  background: var(--color-surface-raised);
+}
+
+.fear__plate img {
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--radius-sm) - 6px);
+  display: block;
+}
+
+.fear__name {
+  margin: 0;
+  font-family: var(--font-devanagari);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-md);
+  color: var(--color-gold-700);
+}
+
+.fear__gloss {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+.fear__modern {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+}
+
+.fear__ids {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.fear__ids a {
+  text-decoration: none;
+  color: var(--color-gold-700);
+}
+
+.arc__note {
+  max-width: var(--content-max-width);
+  margin: var(--gap-section) auto 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* --------------------------------------------------------- abhi page  */
+
+.page--abhi {
+  max-width: 900px;
+}
+
+.group {
+  margin-bottom: var(--gap-section);
+  scroll-margin-top: var(--space-8);
+}
+
+.group__title {
+  margin: 0;
+  font-family: var(--font-devanagari);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
+}
+
+.group__blurb {
+  margin: var(--space-2) 0 var(--space-6);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.states {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .states {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+}
+
+.state__link {
+  display: block;
+  height: 100%;
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  transition: transform var(--duration-fast) var(--ease-calm),
+    box-shadow var(--duration-fast) var(--ease-calm);
+}
+
+.state__link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.state__text {
+  display: block;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+}
+
+.state__meta {
+  display: block;
+  margin-top: var(--space-2);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* ------------------------------------------------- site footer links  */
+
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-6);
+}
+
+/* =====================================================================
+   Print — a verse should come off a home printer looking deliberate.
+   ===================================================================== */
+
+@media print {
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-bg-alt: #ffffff;
+    --color-sage-100: #ffffff;
+    --color-text-primary: #000000;
+    --color-text-secondary: #333333;
+  }
+
+  body,
+  .marble-surface {
+    background: #ffffff !important;
+    background-image: none !important;
+  }
+
+  /* Navigation, controls and decoration earn nothing on paper. */
+  .breadcrumb,
+  .footer-nav,
+  .site-footer,
+  .doors,
+  .today,
+  .textsize,
+  .shloka-grid,
+  .chips {
+    display: none !important;
+  }
+
+  .page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .reflection-panel,
+  .devotional-image-frame,
+  .arc__section--fears {
+    box-shadow: none !important;
+    border: 1px solid #cccccc;
+  }
+
+  .shloka__number,
+  .fear__name,
+  .paath__number {
+    color: #000000 !important;
+  }
+
+  /* Keep a verse, a panel or a plate from splitting across pages. */
+  .verse-sanskrit,
+  .verse-doha,
+  .reflection-panel,
+  .devotional-image-frame,
+  .paath__verse,
+  .fear {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .shloka,
+  .paath__verse {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .devotional-image-frame {
+    max-width: 240px;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000000;
+  }
+}
