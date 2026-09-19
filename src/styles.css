@@ -1013,25 +1013,35 @@ a {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-8);
 }
 
-@media (min-width: 768px) {
-  .fears {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-8);
-  }
-}
-
+/* The elaborated cards carry two paragraphs each, so they read better as a
+   single column than squeezed two-up. */
 .fear {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  grid-template-columns: 1fr;
   gap: var(--space-4);
-  align-items: start;
+  padding-bottom: var(--space-8);
+  border-bottom: var(--border-hairline);
+}
+
+.fear:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+@media (min-width: 640px) {
+  .fear {
+    grid-template-columns: 150px 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
 }
 
 .fear__plate {
   margin: 0;
+  max-width: 150px;
   border: var(--border-hairline);
   border-radius: var(--radius-sm);
   padding: var(--space-1);
@@ -1045,40 +1055,74 @@ a {
   display: block;
 }
 
+.fear__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 .fear__name {
   margin: 0;
   font-family: var(--font-devanagari);
   font-weight: var(--weight-medium);
-  font-size: var(--text-md);
+  font-size: var(--text-lg);
   color: var(--color-gold-700);
 }
 
-.fear__gloss {
-  margin: var(--space-1) 0 0;
+.fear__verses {
+  margin: 0;
   font-family: var(--font-devanagari);
   font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-secondary);
+}
+
+.fear__verses a {
+  text-decoration: none;
+  border-bottom: var(--border-hairline);
+  padding-bottom: 2px;
+  transition: color var(--duration-fast) var(--ease-calm);
+}
+
+.fear__verses a:hover {
+  color: var(--color-gold-700);
+}
+
+.fear__traditional {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
   letter-spacing: var(--tracking-wide);
   color: var(--color-text-muted);
 }
 
-.fear__modern {
-  margin: var(--space-3) 0 0;
+.fear__scene {
+  margin: var(--space-4) 0 0;
   font-family: var(--font-devanagari);
-  font-size: var(--text-sm);
-  line-height: var(--leading-normal);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
   color: var(--color-text-primary);
 }
 
-.fear__ids {
-  margin: var(--space-3) 0 0;
+.fear__modern {
+  margin: var(--space-4) 0 0;
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--color-gold-300);
   font-family: var(--font-devanagari);
-  font-size: var(--text-xs);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
 }
 
-.fear__ids a {
-  text-decoration: none;
-  color: var(--color-gold-700);
+.fear__modern-label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-sage-700);
 }
 
 .arc__note {

@@ -134,7 +134,7 @@ const siteFooter = (prefix) => `<footer class="site-footer">
   <nav class="site-footer__nav" aria-label="साइट">
     <a class="site-footer__link" href="${prefix}">सभी श्लोक</a>
     <a class="site-footer__link" href="${prefix}paath/">अखंड पाठ</a>
-    <a class="site-footer__link" href="${prefix}rachna/">स्तोत्र की बनावट</a>
+    <a class="site-footer__link" href="${prefix}rachna/">स्तोत्र की संरचना</a>
     <a class="site-footer__link" href="${prefix}abhi/">अभी क्या चल रहा है</a>
   </nav>
 </footer>`;
@@ -202,7 +202,7 @@ function landingPage(data, index) {
       <span class="door__blurb">मन की स्थिति से श्लोक तक — अंक से नहीं</span>
     </a>
     <a class="door" href="rachna/">
-      <span class="door__title">स्तोत्र की बनावट</span>
+      <span class="door__title">स्तोत्र की संरचना</span>
       <span class="door__blurb">आठ महाभय और पूरे स्तोत्र का नक़्शा</span>
     </a>
     <a class="door" href="paath/">
@@ -396,8 +396,9 @@ function rachnaPage(data, structure) {
         const fears = sec.fears
           .map((f) => {
             const first = f.ids[0];
+            // "श्लोक ४२ · ४३" — the word is not repeated for a second verse.
             const links = f.ids
-              .map((id) => `<a href="../${byId.get(id).slug}/">${toDevanagari(id)}</a>`)
+              .map((id, i) => `<a href="../${byId.get(id).slug}/">${i === 0 ? 'श्लोक ' : ''}${toDevanagari(id)}</a>`)
               .join(' · ');
             return `        <li class="fear">
           <figure class="fear__plate">
@@ -409,10 +410,16 @@ function rachnaPage(data, structure) {
             </picture>
           </figure>
           <div class="fear__body">
-            <h3 class="fear__name">${esc(f.name)}</h3>
-            <p class="fear__gloss">${esc(f.gloss)}</p>
-            <p class="fear__modern">${esc(f.modern)}</p>
-            <p class="fear__ids">${links}</p>
+            <div class="fear__head">
+              <h3 class="fear__name">${esc(f.name)}</h3>
+              <p class="fear__verses">${links}</p>
+            </div>
+            <p class="fear__traditional">${esc(f.traditional)}</p>
+            <p class="fear__scene">${esc(f.scene)}</p>
+            <p class="fear__modern">
+              <span class="fear__modern-label">आज के जीवन में</span>
+              ${esc(f.modern)}
+            </p>
           </div>
         </li>`;
           })
@@ -451,8 +458,8 @@ ${fears}
   </nav>
 
   <header class="shloka__header">
-    <h1 class="shloka__number">स्तोत्र की बनावट</h1>
-    <p class="shloka__theme">४८ श्लोक एक कतार नहीं — एक बनावट हैं</p>
+    <h1 class="shloka__number">स्तोत्र की संरचना</h1>
+    <p class="shloka__theme">४८ श्लोक एक कतार नहीं, एक संरचना हैं</p>
     <span class="rule" aria-hidden="true"></span>
   </header>
 
@@ -465,7 +472,7 @@ ${sections}
 ${siteFooter('../')}`;
 
   return layout({
-    title: `स्तोत्र की बनावट | ${SITE_TITLE}`,
+    title: `स्तोत्र की संरचना | ${SITE_TITLE}`,
     description:
       'The architecture of the Bhaktamar Stotra — its opening, its praise, and the eight great fears of verses 38 to 46, each with its counterpart in everyday life.',
     bodyClass: 'body--rachna',
@@ -659,7 +666,7 @@ async function buildShareCards(data, index) {
   // Cards for the three non-verse pages.
   const covers = [
     ['home.jpg', SITE_TITLE, '४८ श्लोक · अर्थ · जीवन से जुड़ाव', 's01_yantra.png'],
-    ['rachna.jpg', 'स्तोत्र की बनावट', 'आठ महाभय और पूरे स्तोत्र का नक़्शा', 's38_yantra.png'],
+    ['rachna.jpg', 'स्तोत्र की संरचना', 'आठ महाभय और पूरे स्तोत्र का नक़्शा', 's38_yantra.png'],
     ['abhi.jpg', 'अभी क्या चल रहा है', 'मन की स्थिति से श्लोक तक', 's09_yantra.png'],
   ];
   for (const [file, title, subtitle, art] of covers) {
