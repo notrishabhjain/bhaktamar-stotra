@@ -58,12 +58,42 @@ alongside them, and both are meant to be reviewed and edited by hand:
   situation its reflection actually describes) and sorts the 48 into eight
   groups. This is what `/abhi/` is built from. The verses, meanings and
   reflections themselves are never touched.
+- `padachhed.json` holds the word-by-word Hindi gloss (शब्दार्थ) shown under
+  the Sanskrit on a detail page. It is **deliberately partial** — a verse with
+  no entry simply renders no gloss block, so it can be filled in over time.
+  Every build prints how many verses are covered and lists the ones missing.
+  See "Filling in the शब्दार्थ" below.
 - `structure.json` describes the poem's sections. The eight-fears sequence
   (verses 38–46) is evident in the source data itself — the titles name the
   elephant, lion, fire, snake, war, water, disease and chains in order. The
   other section boundaries follow conventional readings and are marked as a
   reading aid on the page, not asserted as scholarship. **Verify them against
   a source you trust before treating them as authoritative.**
+
+## Filling in the शब्दार्थ
+
+`content/padachhed.json` maps a verse id to an ordered list of
+`[पद, अर्थ]` pairs:
+
+```json
+"1": [
+  ["भक्त-अमर", "भक्त देवों के"],
+  ["प्रणत", "झुके हुए"]
+]
+```
+
+Two things matter when adding a verse:
+
+1. **Reconstitute words broken across lines.** The source text in `data.json`
+   breaks mid-word to preserve the verse layout — `प्रभाणा-` at the end of one
+   line and `मुद्योतकं` at the start of the next are really
+   `प्रभाणाम् उद्योतकम्`. The gloss lists the whole word, not the fragments.
+2. **Keep the order of the verse**, so a reader can follow the list against
+   the Sanskrit line by line, the way a pravachan takes it up.
+
+Sanskrit compound-splitting (सन्धि/समास विच्छेद) is where this goes wrong, and
+a wrong gloss in a devotional text is worse than no gloss. Have entries checked
+by someone who reads Sanskrit before publishing them.
 
 ## Share cards
 
@@ -158,8 +188,12 @@ every link still works.
 - **Reading size** has three steps, stored in `localStorage` and applied
   before first paint so a saved size never flashes. Only the reading tokens
   change; UI chrome keeps its size.
-- **Today's verse** is derived from the calendar day, so everyone sees the
-  same verse on the same day. No storage, no backend, no tracking.
+- **Today's verse** is derived from the **local** calendar date, so it turns
+  over at local midnight and everyone in a timezone sees the same verse on the
+  same day. (Dividing the UTC epoch instead would roll it over at 05:30 in
+  India.) A tab left open overnight re-checks the date when it is looked at
+  again, so it never sits on yesterday's verse. No storage, no backend, no
+  tracking.
 - **Offline**: a service worker precaches the shell and caches pages as they
   are read, so a verse you have opened stays readable with no connection.
   Pages are network-first, so a rebuild is picked up as soon as you are back

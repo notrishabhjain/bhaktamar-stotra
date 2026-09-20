@@ -89,20 +89,59 @@
   var todayBox = document.querySelector('[data-today]');
   var todayData = document.querySelector('[data-today-data]');
   if (todayBox && todayData) {
-    try {
-      var list = JSON.parse(todayData.textContent);
-      // Same verse for everyone on the same calendar day, no storage needed.
-      var day = Math.floor(Date.now() / 86400000);
-      var pick = list[day % list.length];
-      var link = todayBox.querySelector('[data-today-link]');
-      link.setAttribute('href', pick.s + '/');
-      todayBox.querySelector('[data-today-number]').textContent = 'श्लोक ' + pick.n;
-      todayBox.querySelector('[data-today-title]').textContent = pick.t;
-      todayBox.querySelector('[data-today-state]').textContent = pick.f;
-      todayBox.removeAttribute('hidden');
-    } catch (e) {
-      /* leave the panel hidden */
-    }
+    var render = function () {
+      try {
+        var list = JSON.parse(todayData.textContent);
+        var now = new Date();
+        /**
+         * Day number from the LOCAL calendar date, so the verse turns over at
+         * local midnight. Dividing Date.now() by a day length instead would
+         * roll it over at 00:00 UTC — which is 05:30 in India, leaving early
+         * risers on yesterday's verse.
+         */
+        var day = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+        var pick = list[((day % list.length) + list.length) % list.length];
+        var link = todayBox.querySelector('[data-today-link]');
+        link.setAttribute('href', pick.s + '/');
+        todayBox.querySelector('[data-today-number]').textContent = 'श्लोक ' + pick.n;
+        todayBox.querySelector('[data-today-title]').textContent = pick.t;
+        todayBox.querySelector('[data-today-state]').textContent = pick.f;
+
+        var dateEl = todayBox.querySelector('[data-today-date]');
+        if (dateEl) {
+          try {
+            dateEl.textContent = now.toLocaleDateString('hi-IN', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            });
+          } catch (e) {
+            dateEl.textContent = '';
+          }
+        }
+        todayBox.removeAttribute('hidden');
+        return day;
+      } catch (e) {
+        return null; /* leave the panel hidden */
+      }
+    };
+
+    var shownDay = render();
+
+    /**
+     * A tab left open overnight would otherwise still show yesterday's verse.
+     * Re-check whenever the page is looked at again, and repaint only if the
+     * date actually turned over.
+     */
+    var recheck = function () {
+      if (document.visibilityState !== 'visible') return;
+      var now = new Date();
+      var day = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+      if (day !== shownDay) shownDay = render();
+    };
+    document.addEventListener('visibilitychange', recheck);
+    window.addEventListener('focus', recheck);
+    window.addEventListener('pageshow', recheck);
   }
 
   /* ----------------------------------------------------- offline support */

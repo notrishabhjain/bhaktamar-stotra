@@ -1294,3 +1294,109 @@ a {
     color: #000000;
   }
 }
+
+.today__date {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-devanagari);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+/* =====================================================================
+   शब्दार्थ — the word-by-word gloss, as a pravachan would take it up.
+   Rendered only for verses that have one in content/padachhed.json.
+   ===================================================================== */
+
+.padachhed {
+  max-width: var(--content-max-width);
+  margin: var(--space-8) auto 0;
+  text-align: left;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.padachhed__summary {
+  cursor: pointer;
+  list-style: none;
+  text-align: center;
+}
+
+.padachhed__summary::-webkit-details-marker {
+  display: none;
+}
+
+.padachhed__summary .section-label {
+  margin: 0;
+  transition: color var(--duration-fast) var(--ease-calm);
+}
+
+.padachhed__summary:hover .section-label {
+  color: var(--color-gold-700);
+}
+
+.padachhed__list {
+  margin: var(--space-6) 0 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.padachhed__pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-marble-vein);
+}
+
+.padachhed__pair:last-child {
+  border-bottom: none;
+}
+
+@media (min-width: 560px) {
+  .padachhed__pair {
+    grid-template-columns: 13rem 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+  }
+}
+
+.padachhed__word {
+  margin: 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-base);
+  color: var(--color-gold-700);
+}
+
+.padachhed__meaning {
+  margin: 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+}
+
+.padachhed__note {
+  margin: var(--space-6) 0 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+@media print {
+  /* A collapsed gloss must still print in full. */
+  .padachhed {
+    background: #ffffff;
+    padding: 0;
+  }
+  .padachhed[open] .padachhed__list,
+  .padachhed .padachhed__list {
+    display: grid !important;
+  }
+  .padachhed__pair {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

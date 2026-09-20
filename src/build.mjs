@@ -189,6 +189,7 @@ function landingPage(data, index) {
 <main class="page page--landing">
   <section class="today" data-today hidden aria-labelledby="today-label">
     <h2 class="section-label section-label--deva" id="today-label">आज का श्लोक</h2>
+    <p class="today__date" data-today-date></p>
     <a class="today__link" href="#" data-today-link>
       <span class="today__number" data-today-number></span>
       <span class="today__title" data-today-title></span>
@@ -236,7 +237,7 @@ ${cards}
 
 /* ---------------------------------------------------------- detail page */
 
-function detailPage(shloka, prev, next, index) {
+function detailPage(shloka, prev, next, index, padachhed) {
   const num = toDevanagari(shloka.id);
   const entry = index.states.find((x) => x.id === shloka.id);
   const group = entry && index.groups.find((g) => g.key === entry.group);
@@ -253,6 +254,27 @@ function detailPage(shloka, prev, next, index) {
   const nextLink = next
     ? `<a class="footer-nav__link" href="../${next.slug}/" rel="next">अगला श्लोक →</a>`
     : `<span class="footer-nav__link is-disabled" aria-disabled="true">अगला श्लोक →</span>`;
+
+  const words = (padachhed.verses || {})[String(shloka.id)];
+  const padachhedBlock = words
+    ? `
+    <details class="padachhed" open>
+      <summary class="padachhed__summary">
+        <span class="section-label section-label--deva">शब्दार्थ — पद-दर-पद</span>
+      </summary>
+      <dl class="padachhed__list">
+${words
+  .map(
+    ([word, meaning]) => `        <div class="padachhed__pair">
+          <dt class="padachhed__word">${esc(word)}</dt>
+          <dd class="padachhed__meaning">${esc(meaning)}</dd>
+        </div>`
+  )
+  .join('\n')}
+      </dl>
+      <p class="padachhed__note">${esc(padachhed.note)}</p>
+    </details>`
+    : '';
 
   const stateLine =
     entry && group
@@ -278,6 +300,7 @@ function detailPage(shloka, prev, next, index) {
       <div class="verse-sanskrit">
           ${verseLines(shloka.sanskrit)}
       </div>
+      ${padachhedBlock}
     </section>
 
     <section class="block block--verse" aria-labelledby="label-doha">
@@ -768,6 +791,7 @@ async function build() {
   const data = JSON.parse(await readFile(path.join(contentDir, 'data.json'), 'utf8'));
   const index = JSON.parse(await readFile(path.join(contentDir, 'reflection-index.json'), 'utf8'));
   const structure = JSON.parse(await readFile(path.join(contentDir, 'structure.json'), 'utf8'));
+  const padachhed = JSON.parse(await readFile(path.join(contentDir, 'padachhed.json'), 'utf8'));
 
   if (data.length !== 48) throw new Error(`Expected 48 shlokas, found ${data.length}`);
   if (index.states.length !== 48) throw new Error(`Expected 48 state entries, found ${index.states.length}`);
@@ -783,7 +807,10 @@ async function build() {
   for (const [i, shloka] of data.entries()) {
     const dir = path.join(dist, shloka.slug);
     await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, 'index.html'), detailPage(shloka, data[i - 1], data[i + 1], index));
+    await writeFile(
+      path.join(dir, 'index.html'),
+      detailPage(shloka, data[i - 1], data[i + 1], index, padachhed)
+    );
   }
   for (const [slug, html] of [
     ['paath', paathPage(data)],
@@ -808,7 +835,14 @@ async function build() {
   await buildSeoFiles(data);
 
   const mb = (n) => `${(n / 1024 / 1024).toFixed(2)} MB`;
+  const glossed = Object.keys(padachhed.verses || {}).length;
   console.log(`Built landing + ${data.length} shlokas + paath + rachna + abhi = ${data.length + 4} pages`);
+  console.log(
+    `शब्दार्थ present for ${glossed} of ${data.length} verses` +
+      (glossed < data.length
+        ? ` — missing: ${data.filter((s) => !(padachhed.verses || {})[String(s.id)]).map((s) => s.id).join(', ')}`
+        : '')
+  );
   console.log(`dist/ total: ${mb(await dirSize(dist))}`);
 }
 
