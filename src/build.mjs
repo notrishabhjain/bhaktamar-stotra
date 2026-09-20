@@ -255,7 +255,27 @@ function detailPage(shloka, prev, next, index, padachhed) {
     ? `<a class="footer-nav__link" href="../${next.slug}/" rel="next">अगला श्लोक →</a>`
     : `<span class="footer-nav__link is-disabled" aria-disabled="true">अगला श्लोक →</span>`;
 
-  const words = (padachhed.verses || {})[String(shloka.id)];
+  const gloss = (padachhed.verses || {})[String(shloka.id)];
+  const words = gloss && gloss.words;
+  const alankar = (gloss && gloss.alankar) || [];
+
+  const alankarBlock = alankar.length
+    ? `
+      <div class="alankar">
+        <h3 class="section-label section-label--deva">अलंकार एवं भाव</h3>
+        <dl class="alankar__list">
+${alankar
+  .map(
+    (a) => `          <div class="alankar__item">
+            <dt class="alankar__name">${esc(a.name)}</dt>
+            <dd class="alankar__note">${esc(a.note)}</dd>
+          </div>`
+  )
+  .join('\n')}
+        </dl>
+      </div>`
+    : '';
+
   const padachhedBlock = words
     ? `
     <details class="padachhed" open>
@@ -271,7 +291,7 @@ ${words
         </div>`
   )
   .join('\n')}
-      </dl>
+      </dl>${alankarBlock}
       <p class="padachhed__note">${esc(padachhed.note)}</p>
     </details>`
     : '';
@@ -835,10 +855,12 @@ async function build() {
   await buildSeoFiles(data);
 
   const mb = (n) => `${(n / 1024 / 1024).toFixed(2)} MB`;
-  const glossed = Object.keys(padachhed.verses || {}).length;
+  const entries = padachhed.verses || {};
+  const glossed = Object.keys(entries).length;
+  const withAlankar = Object.values(entries).filter((v) => (v.alankar || []).length).length;
   console.log(`Built landing + ${data.length} shlokas + paath + rachna + abhi = ${data.length + 4} pages`);
   console.log(
-    `शब्दार्थ present for ${glossed} of ${data.length} verses` +
+    `शब्दार्थ for ${glossed} of ${data.length} verses, अलंकार for ${withAlankar}` +
       (glossed < data.length
         ? ` — missing: ${data.filter((s) => !(padachhed.verses || {})[String(s.id)]).map((s) => s.id).join(', ')}`
         : '')

@@ -1400,3 +1400,43 @@ a {
     page-break-inside: avoid;
   }
 }
+
+/* अलंकार — the figures of speech, sitting under the word list. */
+
+.alankar {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-marble-vein);
+}
+
+.alankar .section-label {
+  text-align: center;
+  color: var(--color-sage-700);
+}
+
+.alankar__list {
+  margin: var(--space-4) 0 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.alankar__item {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.alankar__name {
+  margin: 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-gold-700);
+}
+
+.alankar__note {
+  margin: 0;
+  font-family: var(--font-devanagari);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-primary);
+}
